@@ -147,4 +147,16 @@ ls $TEMP
         assert!(x.stdout.len() > 10);
         assert!(x.stderr.is_empty())
     }
+
+    #[test]
+    #[cfg(windows)]
+    fn test_install_choco() {
+        // choco is typically installed on github runners.
+        let x = run_script("Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))", true).unwrap();
+        println!("{x:?}");
+
+        let x = run_script("choco.exe --version", true).unwrap();
+        println!("{x:?}");
+        assert!(!x.stdout.is_empty());
+    }
 }
