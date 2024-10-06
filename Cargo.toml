@@ -6,9 +6,8 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.89"
 serde = { version = "1.0.210", features = [ "derive" ]}
+run_script = "0.11.0"
 
 [target."cfg(windows)".dependencies]
 powershell_script = "1.1.0"
 
-[target."cfg(unix)".dependencies]
-run_script = "0.11.0"
