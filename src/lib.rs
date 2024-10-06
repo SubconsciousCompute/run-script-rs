@@ -5,7 +5,6 @@
 /// Spawn a script in the foreground, using the appropriate shell
 ///
 /// This must not block. Return the child and the caller may block if they like
-#[cfg(unix)]
 pub fn spawn_script(script: &str) -> anyhow::Result<std::process::Child> {
     #[cfg(target_os = "linux")]
     let runner = Some("bash".to_string());
