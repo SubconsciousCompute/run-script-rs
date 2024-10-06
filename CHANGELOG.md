@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2024-10-06
+
+- Expose `spawn_script` function.
+
 ## [0.1.0] - 2024-10-06
 
 - First release
