@@ -158,4 +158,64 @@ ls $TEMP
         println!("{x:?}");
         assert!(!x.stdout.is_empty());
     }
+
+    #[test]
+    #[cfg(windows)]
+    fn test_powershell() {
+        let out = run_powershell("ls", true).unwrap();
+        assert!(!out.is_empty());
+        println!("output=`{out}`");
+
+        let uuid = run_powershell(
+            r"(Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography).MachineGuid",
+            true,
+        ).unwrap();
+        assert!(!uuid.is_empty());
+        println!("11 uuid=`{uuid}`");
+
+        let val: String = hklm_open_subkey("SOFTWARE\\Microsoft\\Cryptography")
+            .unwrap()
+            .get_value("MachineGuid")
+            .unwrap();
+        println!("12 {val:?}");
+        assert_eq!(uuid, val);
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn test_script() {
+        let x = run_script("ls", true).unwrap();
+        println!("{x}");
+        assert_eq!(x.code, 0);
+        assert!(x.stdout.len() > 10);
+
+        let x = run_script("zhandubalm", true);
+        assert!(x.is_ok(), "{x:?}");
+        let x = x.unwrap();
+        assert_eq!(x.code, 127); // command not found.
+        assert!(x.stderr.len() > 1);
+
+        let x = run_script("which cargo", true).unwrap();
+        println!("{x}");
+        assert_eq!(x.code, 0);
+        assert!(x.stdout.len() > 1);
+    }
+
+    #[test]
+    #[cfg(windows)]
+    fn test_script() {
+        let x = run_script("dir", true).unwrap();
+        println!("{x}");
+        assert_eq!(x.code, 0);
+        assert!(x.stdout.len() > 10);
+
+        let x = run_script("zhandubalm", true);
+        println!("{x:?}");
+        assert!(x.is_err());
+
+        let cmd = r"(Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography).MachineGuid";
+        let x = run_script(cmd, true).unwrap();
+        println!("{x}");
+        assert_eq!(x.code, 0);
+    }
 }
