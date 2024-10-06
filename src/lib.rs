@@ -135,6 +135,12 @@ mod tests {
     #![allow(clippy::unwrap_used)]
     use super::*;
 
+    /// open registry key for editing or reading.
+    fn hklm_open_subkey(subkey: &str) -> anyhow::Result<winreg::RegKey> {
+        let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
+        Ok(hklm.open_subkey(subkey)?)
+    }
+
     #[test]
     fn test_script_multiline() {
         let script = r#"ls $HOME
@@ -163,13 +169,13 @@ ls $TEMP
     #[cfg(windows)]
     fn test_powershell() {
         let out = run_powershell("ls", true).unwrap();
-        assert!(!out.is_empty());
-        println!("output=`{out}`");
+        assert!(!out.stdout.is_empty());
+        println!("output=`{out:?}`");
 
         let uuid = run_powershell(
             r"(Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography).MachineGuid",
             true,
-        ).unwrap();
+        ).unwrap().stdout;
         assert!(!uuid.is_empty());
         println!("11 uuid=`{uuid}`");
 
