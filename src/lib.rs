@@ -136,6 +136,7 @@ mod tests {
     use super::*;
 
     /// open registry key for editing or reading.
+    #[cfg(windows)]
     fn hklm_open_subkey(subkey: &str) -> anyhow::Result<winreg::RegKey> {
         let hklm = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
         Ok(hklm.open_subkey(subkey)?)
